@@ -1,0 +1,66 @@
+# Refreshes the layers that browsers cannot fetch directly (CORS / HTTP-only /
+# needs IP geolocation) and publishes docs/ to GitHub Pages.
+#
+# One-time setup: Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+# Optional: Settings -> Secrets and variables -> Actions -> Variables -> COMMIT_DATA=true
+#           to ALSO commit docs/data/*.json snapshots to the repo (off by default to
+#           keep git history small; Pages gets fresh data either way).
+name: Update live data & deploy Pages
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # GitHub may delay scheduled runs by a few minutes under load
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: livemap-pages
+  cancel-in-progress: false
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      # GDELT rolling 24h window + IP-geolocation cache survive between runs
+      - uses: actions/cache@v4
+        with:
+          path: data_cache
+          key: livemap-cache-${{ github.run_id }}
+          restore-keys: livemap-cache-
+
+      - name: Fetch all layers -> docs/data/*.json
+        run: python scripts/update_data.py
+
+      - name: Commit data snapshot (optional)
+        if: vars.COMMIT_DATA == 'true'
+        run: |
+          git config user.name  "livemap-bot"
+          git config user.email "livemap-bot@users.noreply.github.com"
+          git add -f docs/data/*.json
+          git diff --cached --quiet || git commit -m "data: refresh $(date -u +%Y-%m-%dT%H:%MZ)" && git push
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deploy
+        uses: actions/deploy-pages@v4
