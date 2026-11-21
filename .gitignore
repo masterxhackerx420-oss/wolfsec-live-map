@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+# runtime caches (GDELT rolling window, IP geolocation cache)
+data_cache/
+# generated layer snapshots: built by the GitHub Actions workflow on every run
+docs/data/*.json
+!docs/data/us_counties.json
+!docs/data/us_zones.json
+# misc
+.DS_Store
+Thumbs.db
+*.log

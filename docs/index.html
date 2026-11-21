@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WolfSec LiveMap — world events in real time</title>
+<meta name="description" content="Live world map: earthquakes, volcanoes, disasters, weather, war/conflict, world news, military aircraft, cyber threats and markets.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='13' fill='none' stroke='%2300e5ff' stroke-width='3'/><circle cx='16' cy='16' r='4' fill='%2300e5ff'/></svg>">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header id="topbar">
+  <div class="brand"><span class="logo">◎</span> WOLFSEC <span class="dim">//</span> LIVEMAP</div>
+  <div id="markets-strip" title="Major stock indices (delayed)"></div>
+  <div class="clocks"><span id="mode-badge" class="badge">…</span><span id="clock-local"></span><span id="clock-utc" class="dim"></span></div>
+</header>
+
+<aside id="sidebar">
+  <button id="collapse" title="Hide/show panel">⟨</button>
+  <section>
+    <h3>Layers <span class="dim small">(click name to solo)</span></h3>
+    <ul id="layer-list"></ul>
+    <div class="row small"><a href="#" id="all-on">all on</a> · <a href="#" id="all-off">all off</a></div>
+  </section>
+  <section>
+    <h3>Filters</h3>
+    <label>Time window
+      <select id="f-window">
+        <option value="1">last 1 hour</option><option value="6">last 6 hours</option>
+        <option value="24" selected>last 24 hours</option><option value="168">last 7 days</option>
+        <option value="0">any time</option>
+      </select></label>
+    <label>Min severity
+      <select id="f-sev">
+        <option value="-1">any</option><option value="1">moderate+</option>
+        <option value="2">severe+</option><option value="3">extreme only</option>
+      </select></label>
+    <label>Min quake magnitude <b id="f-mag-val">2.5</b>
+      <input type="range" id="f-mag" min="0" max="7" step="0.5" value="2.5"></label>
+    <label>Search <input type="search" id="f-q" placeholder="e.g. Ukraine, C17, ransomware"></label>
+    <label class="check"><input type="checkbox" id="f-cluster" checked> cluster markers</label>
+  </section>
+  <section>
+    <h3>Refresh</h3>
+    <label>Auto-refresh
+      <select id="f-refresh">
+        <option value="0">off</option><option value="30">30 s</option><option value="60" selected>60 s</option>
+        <option value="120">2 min</option><option value="300">5 min</option>
+      </select></label>
+    <button id="refresh-now">⟳ refresh now</button>
+  </section>
+  <section class="small dim" id="about">
+    Real public feeds only — no simulated data. A layer that fails shows <span class="err">ERR</span>.
+    Cyber = threat infrastructure &amp; reported attackers, not live attack traffic.
+    <a href="https://github.com/masterxhackerx420-oss/wolfsec-live-map" target="_blank" rel="noopener">source</a>
+  </section>
+</aside>
+
+<div id="map"></div>
+
+<aside id="feed">
+  <h3>Live feed <span id="feed-count" class="dim small"></span></h3>
+  <ol id="feed-list"></ol>
+</aside>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""></script>
+<script src="js/config.js"></script>
+<script src="js/layers.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
