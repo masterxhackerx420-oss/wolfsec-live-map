@@ -226,7 +226,7 @@
   function renderFeed() {
     const items = [];
     LAYERS.forEach((l) => {
-      if (!state.on[l.id] || !data[l.id] || l.id === "markets") return;
+      if (!state.on[l.id] || !data[l.id] || l.id === "markets" || l.id === "military") return; // positions, not events
       data[l.id].features.forEach((f) => { if (f.properties.time && passes(f)) items.push(f); });
     });
     items.sort((a, b) => b.properties.time - a.properties.time);
